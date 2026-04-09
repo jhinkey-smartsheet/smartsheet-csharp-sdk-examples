@@ -32,6 +32,14 @@ SmartsheetClient client = new SmartsheetBuilder()
 
 Workspace workspace = client.WorkspaceResources.GetWorkspaceMetadata(workspaceId);
 
+Console.WriteLine($"Workspace\n " + 
+    $"name: {workspace.Name}\n " +
+    $"id: {workspace.Id}\n " +
+    $"access level: {workspace.AccessLevel}\n " +
+    $"permalink: {workspace.Permalink}\n " +
+    $"created at: {workspace.CreatedAt}\n " +
+    $"modified at: {workspace.ModifiedAt}\n ");
+
 List<Sheet> sheets = new();
 List<Folder> folders = new();
 List<Report> reports = new();
