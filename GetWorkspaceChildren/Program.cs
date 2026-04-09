@@ -30,7 +30,8 @@ SmartsheetClient client = new SmartsheetBuilder()
     .SetAccessToken(token)
     .Build();
 
-Workspace workspace = client.WorkspaceResources.GetWorkspaceMetadata(workspaceId);
+Workspace workspace =
+    client.WorkspaceResources.GetWorkspaceMetadata(workspaceId);
 
 Console.WriteLine($"Workspace\n " + 
     $"name: {workspace.Name}\n " +
