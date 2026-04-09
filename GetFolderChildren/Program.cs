@@ -3,7 +3,7 @@ using Smartsheet.Api;
 using Smartsheet.Api.Models;
 
 const string tokenEnv = "SMARTSHEET_ACCESS_TOKEN";
-const string workspaceEnv = "SMARTSHEET_WORKSPACE_ID";
+const string folderEnv = "FOLDER_ID";
 
 var token = Environment.GetEnvironmentVariable(tokenEnv);
 if (string.IsNullOrWhiteSpace(token))
@@ -12,17 +12,17 @@ if (string.IsNullOrWhiteSpace(token))
     Environment.Exit(1);
 }
 
-var workspaceArg = args.Length > 0 ? args[0] : Environment.GetEnvironmentVariable(workspaceEnv);
-if (string.IsNullOrWhiteSpace(workspaceArg))
+var folderArg = args.Length > 0 ? args[0] : Environment.GetEnvironmentVariable(folderEnv);
+if (string.IsNullOrWhiteSpace(folderArg))
 {
-    Console.Error.WriteLine("Usage: GetWorkspaceChildren <workspaceId>");
-    Console.Error.WriteLine($"Or set {workspaceEnv} and run with no arguments.");
+    Console.Error.WriteLine("Usage: GetFolderChildren <folderId>");
+    Console.Error.WriteLine($"Or set {folderEnv} and run with no arguments.");
     Environment.Exit(1);
 }
 
-if (!long.TryParse(workspaceArg, out var workspaceId))
+if (!long.TryParse(folderArg, out var folderId))
 {
-    Console.Error.WriteLine("Workspace id must be a numeric id.");
+    Console.Error.WriteLine("Folder id must be a numeric id.");
     Environment.Exit(1);
 }
 
@@ -30,16 +30,15 @@ SmartsheetClient client = new SmartsheetBuilder()
     .SetAccessToken(token)
     .Build();
 
-Workspace workspace =
-    client.WorkspaceResources.GetWorkspaceMetadata(workspaceId);
+Folder parentFolder =
+    client.FolderResources.GetFolderMetadata(folderId);
 
-Console.WriteLine($"Workspace\n " + 
-    $"name: {workspace.Name}\n " +
-    $"id: {workspace.Id}\n " +
-    $"access level: {workspace.AccessLevel}\n " +
-    $"permalink: {workspace.Permalink}\n " +
-    $"created at: {workspace.CreatedAt}\n " +
-    $"modified at: {workspace.ModifiedAt}\n ");
+Console.WriteLine($"Parent Folder\n " + 
+    $"name: {parentFolder.Name}\n " +
+    $"id: {parentFolder.Id}\n " +
+    $"permalink: {parentFolder.Permalink}\n " +
+    $"created at: {parentFolder.CreatedAt}\n " +
+    $"modified at: {parentFolder.ModifiedAt}\n ");
 
 List<Sheet> sheets = new();
 List<Folder> folders = new();
@@ -50,8 +49,8 @@ List<Template> templates = new();
 string? lastKey = null;
 do
 {
-    TokenPaginatedResult<object> page = client.WorkspaceResources.GetWorkspaceChildren(
-        workspaceId,
+    TokenPaginatedResult<object> page = client.FolderResources.GetFolderChildren(
+        folderId,
         childrenResourceTypes: null,
         include: null,
         numericDates: null,
@@ -85,8 +84,8 @@ do
     lastKey = page.LastKey;
 } while (!string.IsNullOrEmpty(lastKey));
 
-Console.WriteLine("=== Workspace ===");
-Console.WriteLine(JsonConvert.SerializeObject(workspace, Formatting.Indented));
+Console.WriteLine("=== Folder ===");
+Console.WriteLine(JsonConvert.SerializeObject(parentFolder, Formatting.Indented));
 Console.WriteLine();
 
 WriteJsonList("Sheets", sheets);
