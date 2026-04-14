@@ -30,15 +30,15 @@ SmartsheetClient client = new SmartsheetBuilder()
     .SetAccessToken(token)
     .Build();
 
-Folder parentFolder =
+Folder folderMetadata =
     client.FolderResources.GetFolderMetadata(folderId);
 
 Console.WriteLine($"Parent Folder\n " + 
-    $"name: {parentFolder.Name}\n " +
-    $"id: {parentFolder.Id}\n " +
-    $"permalink: {parentFolder.Permalink}\n " +
-    $"created at: {parentFolder.CreatedAt}\n " +
-    $"modified at: {parentFolder.ModifiedAt}\n ");
+    $"name: {folderMetadata.Name}\n " +
+    $"id: {folderMetadata.Id}\n " +
+    $"permalink: {folderMetadata.Permalink}\n " +
+    $"created at: {folderMetadata.CreatedAt}\n " +
+    $"modified at: {folderMetadata.ModifiedAt}\n ");
 
 List<Sheet> sheets = new();
 List<Folder> folders = new();
@@ -49,14 +49,15 @@ List<Template> templates = new();
 string? lastKey = null;
 do
 {
-    TokenPaginatedResult<object> page = client.FolderResources.GetFolderChildren(
-        folderId,
-        childrenResourceTypes: null,
-        include: null,
-        numericDates: null,
-        accessApiLevel: null,
-        lastKey: lastKey,
-        maxItems: null);
+    TokenPaginatedResult<object> page =
+        client.FolderResources.GetFolderChildren(
+            folderId,
+            childrenResourceTypes: null,
+            include: null,
+            numericDates: null,
+            accessApiLevel: null,
+            lastKey: lastKey,
+            maxItems: null);
 
     foreach (var item in page.Data)
     {
@@ -85,7 +86,7 @@ do
 } while (!string.IsNullOrEmpty(lastKey));
 
 Console.WriteLine("=== Folder ===");
-Console.WriteLine(JsonConvert.SerializeObject(parentFolder, Formatting.Indented));
+Console.WriteLine(JsonConvert.SerializeObject(folderMetadata, Formatting.Indented));
 Console.WriteLine();
 
 WriteJsonList("Sheets", sheets);
